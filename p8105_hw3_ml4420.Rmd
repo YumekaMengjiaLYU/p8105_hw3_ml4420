@@ -14,8 +14,14 @@ data("instacart")
 
 
 
-```{r cars}
-summary(cars)
+```{r exploratory data analysis}
+# check the number of rows and columns
+dim(instacart)
+
+# examine the dataßßß
+glimpse(instacart)
+
+
 ```
 
 ## Including Plots
