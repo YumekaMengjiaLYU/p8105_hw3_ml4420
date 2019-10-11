@@ -3,11 +3,31 @@ title: "p8105_hw3_ml4420"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+library(tidyverse)
 
+library(viridis)
 library(p8105.datasets)
 data("instacart")
+
+knitr::opts_chunk$set(
+        echo = TRUE,
+        warning = FALSE,
+        fig.width = 8,
+        fig.height = 6,
+        out.width = "90%"
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
 ```
 
 # Problem 1
@@ -15,15 +35,57 @@ data("instacart")
 
 
 ```{r exploratory data analysis}
+
+
 # check the number of rows and columns
 dim(instacart)
 
-# examine the dataßßß
+# examine the data
 glimpse(instacart)
 
 
-```
+instacart %>%
+  summarise(n_distinct(aisle)) %>% # return the number of aisles
+  
+tail(names(sort(table(instacart$aisle))), 1) # return the aisle which most items ordered from
 
+tab1 = instacart %>% 
+  group_by(aisle) %>%
+  mutate(n_aisle = n()) %>%
+  filter(n_aisle > 10000) %>%
+  ggplot(aes(x = aisle)) + geom_bar(color = "lightblue", fill = "pink") + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 13), axis.title.y = element_text(size = 13), axis.title = element_text(size = 14, face = "bold")) +
+      labs(title = "Number of Items Ordered in Each Aisle", caption = "Limited to aisles with more than 10000 items ordered")
+  
+
+# create a table for three most popular items in baking/dog food/packaged vegetable fruit
+tab1 = instacart  %>%
+  filter(aisle == "dog food care" | aisle == "packaged vegetables fruits" | aisle == "baking ingredients") %>%
+  group_by(aisle) %>%
+  count(product_name) %>%
+  arrange(desc(n))%>%
+  top_n(3) 
+ 
+  
+  
+knitr::kable(tab1)
+# create a table for the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream ordered on each day of the week
+# select the correct columns
+# pivot wider 
+tab2 = instacart %>%
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  select(product_name, order_dow, order_hour_of_day) %>%
+  group_by(order_dow, product_name) %>%
+  mutate(mean_hour = mean(order_hour_of_day)) %>%
+  select(-order_hour_of_day) %>%
+  distinct() %>%
+  pivot_wider(
+    names_from = order_dow,
+    values_from = mean_hour
+  ) 
+
+knitr::kable(tab2)
+ 
+```
 ## Including Plots
 
 You can also embed plots, for example:
