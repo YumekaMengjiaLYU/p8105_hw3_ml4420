@@ -150,3 +150,19 @@ states_2010 = BRFSS_tidy_data %>%
 list(pull(states_2010, locationabbr)) 
 ```
 We can see that CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA were observed at 7 or more locations in 2010.
+
+```{r}
+# create a sphagetti plot
+sphagetti_plot_data = BRFSS_tidy_data %>%
+ filter(response == "Excellent") %>% # limited to "Excellent" responses
+ select(year, locationabbr, locationdesc, data_value) %>%
+ arrange(locationabbr, locationdesc) %>%
+ group_by(locationabbr, year) %>%
+ summarise(avg_data_value = mean(data_value)) %>%
+ ggplot(aes(x = year, y = avg_data_value, color = factor(locationabbr))) + geom_line(aes(group = locationabbr)) +
+ ggtitle(label = "Average Overall Health Value Over Time Within Each State") +
+ theme_minimal() + theme(plot.title = element_text(hjust = 0.5, lineheight = .8, face = "bold")) +
+ xlab("Year") + ylab("Average Value")
+
+sphagetti_plot_data
+```
