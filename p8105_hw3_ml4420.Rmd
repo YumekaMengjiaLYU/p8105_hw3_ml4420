@@ -188,3 +188,21 @@ accel_data = read_csv(file = "./data/accel_data.csv") %>%
  to = c("Weekday", "Weekday", "Weekday", "Weekday", "Weekday", "Weekend", "Weekend"))) %>%
  mutate(day = factor(day)) # encode day into factor variable since a week always has 7 unique day values
 ```
+The variables that exist are `r names(accel_data)`.
+The dataset has `r nrow(accel_data)` rows and `r ncol(accel_data)` and `r n(accel_data)` many observations.
+
+```{r}
+
+# create table showing totals
+accel_data_df = accel_data %>%
+ mutate(total_activity = accel_data %>% select(starts_with("activity_")) %>% rowSums()) %>%
+ select(week, day, total_activity) %>%
+ pivot_wider(
+ names_from = "day",
+ values_from = "total_activity")
+# reorganize columns
+accel_data_df = accel_data_df[, c(1, 5, 3, 7, 8, 6, 2, 4)]
+
+knitr::kable(accel_data_df)
+```
+It can be seen that for the subject physical activity has decreased every week on Sundays but increased or roughly stay the same on weekdays. The subject don't much much physical activity on Saturday for the last two weeks.
