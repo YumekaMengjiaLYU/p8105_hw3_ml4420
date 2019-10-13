@@ -216,15 +216,15 @@ accel_data_plot = accel_data %>%
  values_to = "activity"
  ) %>%
  mutate(minute = as.integer(substring(minute, 10))) %>%
- mutate(hour_id = factor(floor(minute/60) + 1)) %>%
+ mutate(hour_id = factor(floor(minute/60) + 1)) %>%   # aggregate minutely data into hourly data for better readability
  group_by(week, day, hour_id) %>%
  summarise(hour_activity = mean(activity)) %>%
  ggplot(aes(x = hour_id, y = hour_activity, fill = day)) + geom_bar(stat = "identity", na.rm = TRUE) +
- #geom_density(alpha = 0.4, adjust = 0.5, color = "pink") +
- # scale_x_continuous(breaks = seq(60, 1440, 60), labels = minute_to_hour) +
  ggtitle(label = "24-Hour Activity Time Courses for Each Day") +
  theme_minimal() + theme(plot.title = element_text(hjust = 0.5, lineheight = .8, face = "bold")) +
  xlab("Hour of the Day") + ylab("Activity Value")
 
 accel_data_plot
-```{r}
+```
+
+We can see that on Friday the overall physical activity is the highest and on Wednesday the overall physical activity is the lowest. The man seems to sleep from 12PM to 5AM and is most active from 11-13 and 17-21 every day.
