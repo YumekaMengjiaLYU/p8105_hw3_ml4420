@@ -112,12 +112,23 @@ knitr::kable(tab_mean_hour)
 # load data from Behavioral Risk Factors Surveillance Systems
 data("BRFSS")
 
+# tidy data
 BRFSS_tidy_data = brfss_smart2010 %>%
  janitor::clean_names() %>% # format the data to use appropriate variable names
  filter(topic == "Overall Health") %>% # focus on the "Overall Health" topic
  filter(response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% # include only responses from "Excellent" to "Poor"
  mutate(response = factor(response, ordered = TRUE, levels = c("Poor", "Fair", "Good", "Very good", "Excellent"))) # ordered levels
 
+# search for states observed at 7 or more locations in 2002
+states_2002 = BRFSS_tidy_data %>%
+ filter(year == 2002) %>%
+ select(locationabbr, locationdesc) %>%
+ arrange(locationabbr, locationdesc) %>%
+ distinct() %>%
+ group_by(locationabbr) %>%
+ count() %>%
+ filter(n > 7 | n == 7)
+list(pull(states_2002, locationabbr)) # list out the states  
 
 ```
-
+We can see that CT, FL, MA, NC, NJ, PA were observed at 7 or more locations in 2002.
