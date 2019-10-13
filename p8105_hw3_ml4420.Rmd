@@ -105,3 +105,19 @@ tab_mean_hour = instacart %>%
 knitr::kable(tab_mean_hour)
  
 ```
+
+# Problem 2
+
+```{r}
+# load data from Behavioral Risk Factors Surveillance Systems
+data("BRFSS")
+
+BRFSS_tidy_data = brfss_smart2010 %>%
+ janitor::clean_names() %>% # format the data to use appropriate variable names
+ filter(topic == "Overall Health") %>% # focus on the "Overall Health" topic
+ filter(response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% # include only responses from "Excellent" to "Poor"
+ mutate(response = factor(response, ordered = TRUE, levels = c("Poor", "Fair", "Good", "Very good", "Excellent"))) # ordered levels
+
+
+```
+
