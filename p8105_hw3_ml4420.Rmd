@@ -128,7 +128,25 @@ states_2002 = BRFSS_tidy_data %>%
  group_by(locationabbr) %>%
  count() %>%
  filter(n > 7 | n == 7)
-list(pull(states_2002, locationabbr)) # list out the states  
+
+ # list out the states  
+list(pull(states_2002, locationabbr))
 
 ```
 We can see that CT, FL, MA, NC, NJ, PA were observed at 7 or more locations in 2002.
+
+```{r}
+# search for states observed at 7 or more locations in 2010
+states_2010 = BRFSS_tidy_data %>%
+ filter(year == 2010) %>%
+ select(locationabbr, locationdesc) %>%
+ arrange(locationabbr, locationdesc) %>%
+ distinct() %>%
+ group_by(locationabbr) %>%
+ count() %>%
+ filter(n > 7 | n == 7)
+
+# list out states
+list(pull(states_2010, locationabbr)) 
+```
+We can see that CA, CO, FL, MA, MD, NC, NE, NJ, NY, OH, PA, SC, TX, WA were observed at 7 or more locations in 2010.
