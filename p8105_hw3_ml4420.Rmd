@@ -1,14 +1,15 @@
 ---
 title: "p8105_hw3_ml4420"
+author: Mengjia Lyu
+date: 2019-10-13
 output: github_document
 ---
 
 ```{r setup, include = FALSE}
 library(tidyverse)
-
-library(viridis)
 library(p8105.datasets)
-data("instacart")
+library(viridis)
+
 
 knitr::opts_chunk$set(
         echo = TRUE,
@@ -36,14 +37,36 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ```{r exploratory data analysis}
 
+# load the data
+data("instacart")
 
 # check the number of rows and columns
 dim(instacart)
 
-# examine the data
-glimpse(instacart)
+# view the structure of data
+str(instacart)
+
+# describe key variables
+names(instacart)
+
+# illustrative examples of observations
+hist(instacart$order_hour_of_day)
+```
+The dataset contains 1384617 rows and 15 columns. Key variables include 
+
++ order_id: order identifier
++ product_id: product identifier
++ user_id: customer identifier
++ order_dow: the day of the week on which the order was placed
++ order_hour_of_day: the hour of the day on which the order was placed
++ product_name: name of the product
++ aisle_id: aisle identifier
++ department_id: department identifier
+
+From the illustration of the *order_hour_of_day* variable, we can see that 13-14PM is the most popular time. 
 
 
+```{r}
 instacart %>%
   summarise(n_distinct(aisle)) %>% # return the number of aisles
   
@@ -58,40 +81,27 @@ tab1 = instacart %>%
   
 
 # create a table for three most popular items in baking/dog food/packaged vegetable fruit
-tab1 = instacart  %>%
+tab_most_ppl = instacart  %>%
   filter(aisle == "dog food care" | aisle == "packaged vegetables fruits" | aisle == "baking ingredients") %>%
   group_by(aisle) %>%
   count(product_name) %>%
   arrange(desc(n))%>%
   top_n(3) 
- 
-  
-  
-knitr::kable(tab1)
+knitr::kable(tab_most_ppl)
+
 # create a table for the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream ordered on each day of the week
-# select the correct columns
-# pivot wider 
-tab2 = instacart %>%
+tab_mean_hour = instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
-  select(product_name, order_dow, order_hour_of_day) %>%
+  select(product_name, order_dow, order_hour_of_day) %>% # select the correct columns
   group_by(order_dow, product_name) %>%
   mutate(mean_hour = mean(order_hour_of_day)) %>%
   select(-order_hour_of_day) %>%
   distinct() %>%
-  pivot_wider(
+  pivot_wider( # pivot wider 
     names_from = order_dow,
     values_from = mean_hour
   ) 
 
-knitr::kable(tab2)
+knitr::kable(tab_mean_hour)
  
 ```
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
