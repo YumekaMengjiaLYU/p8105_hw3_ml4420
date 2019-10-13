@@ -178,3 +178,13 @@ two_panel_plot = BRFSS_tidy_data %>%
 
 two_panel_plot 
 ```
+
+# Problem 3
+```{r}
+# load and clean data
+accel_data = read_csv(file = "./data/accel_data.csv") %>%
+ janitor::clean_names() %>%
+ mutate(day_type = plyr::mapvalues(day, from = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+ to = c("Weekday", "Weekday", "Weekday", "Weekday", "Weekday", "Weekend", "Weekend"))) %>%
+ mutate(day = factor(day)) # encode day into factor variable since a week always has 7 unique day values
+```
