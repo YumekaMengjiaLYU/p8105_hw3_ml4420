@@ -68,17 +68,21 @@ From the illustration of the *order_hour_of_day* variable, we can see that 13-14
 
 ```{r}
 instacart %>%
-  summarise(n_distinct(aisle)) %>% # return the number of aisles
+  summarise(n_distinct(aisle))  # return the number of aisles
   
 tail(names(sort(table(instacart$aisle))), 1) # return the aisle which most items ordered from
 
-tab1 = instacart %>% 
+# plot showing the number of items ordered in each aisle for aisles with more than 10000 items
+aisle_plot = instacart %>% 
   group_by(aisle) %>%
   mutate(n_aisle = n()) %>%
   filter(n_aisle > 10000) %>%
-  ggplot(aes(x = aisle)) + geom_bar(color = "lightblue", fill = "pink") + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 13), axis.title.y = element_text(size = 13), axis.title = element_text(size = 14, face = "bold")) +
-      labs(title = "Number of Items Ordered in Each Aisle", caption = "Limited to aisles with more than 10000 items ordered")
-  
+  ggplot(aes(x = aisle)) + geom_bar(color = "lightblue", fill = "pink") + theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 13),       
+  axis.title.y = element_text(size = 13), axis.title = element_text(size = 14, face = "bold")) +
+  coord_flip() +
+  theme(axis.text.x = element_text(angle = 360)) +
+  labs(title = "Number of Items Ordered in Each Aisle", caption = "Limited to aisles with more than 10000 items ordered")
+aisle_plot  
 
 # create a table for three most popular items in baking/dog food/packaged vegetable fruit
 tab_most_ppl = instacart  %>%
@@ -93,6 +97,8 @@ knitr::kable(tab_most_ppl)
 tab_mean_hour = instacart %>%
   filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
   select(product_name, order_dow, order_hour_of_day) %>% # select the correct columns
+  mutate(order_dow = plyr::mapvalues(order_dow, from = c(0, 1, 2, 3, 4, 5, 6), to = c("Sunday", "Monday", "Tuesday", 
+  "Wednesday", "Thursday", "Friday", "Saturday"))) %>%
   group_by(order_dow, product_name) %>%
   mutate(mean_hour = mean(order_hour_of_day)) %>%
   select(-order_hour_of_day) %>%
@@ -188,8 +194,8 @@ accel_data = read_csv(file = "./data/accel_data.csv") %>%
  to = c("Weekday", "Weekday", "Weekday", "Weekday", "Weekday", "Weekend", "Weekend"))) %>%
  mutate(day = factor(day)) # encode day into factor variable since a week always has 7 unique day values
 ```
-The variables that exist are `r names(accel_data)`.
-The dataset has `r nrow(accel_data)` rows and `r ncol(accel_data)` and `r n(accel_data)` many observations.
+The variables that exist are week, day_id, day, and activity_* (*denote the number of minutes in the day).
+The dataset has `r nrow(accel_data)` rows and `r ncol(accel_data)` columns and `r nrow(accel_data)*ncol(accel_data)` many observations.
 
 ```{r}
 
@@ -205,6 +211,7 @@ accel_data_df = accel_data_df[, c(1, 5, 3, 7, 8, 6, 2, 4)]
 
 knitr::kable(accel_data_df)
 ```
+
 It can be seen that for the subject physical activity has decreased every week on Sundays but increased or roughly stay the same on weekdays. The subject don't much much physical activity on Saturday for the last two weeks.
 ```{r}
 # single panel plot
